@@ -14,6 +14,9 @@ class DynamicTable(TimeStampedModel, models.Model):
         return self.name
 
     def _create_dynamic_model(self):
+        """
+        Create dynamic model class.
+        """
         fields = {
             field.name: field._get_field() for field in self.columns.all()
         }
@@ -30,11 +33,17 @@ class DynamicTable(TimeStampedModel, models.Model):
 
     @staticmethod
     def _create_table(_model):
+        """
+        Create table in the database.
+        """
         with connection.schema_editor() as schema_editor:
             schema_editor.create_model(_model)
 
     @staticmethod
     def _register_model(_model):
+        """
+        Register model in the apps registry.
+        """
         apps.register_model(TableBuilderConfig.name, _model)
 
     def is_table_exists(self):
@@ -48,6 +57,9 @@ class DynamicTable(TimeStampedModel, models.Model):
             return result[0] is not None
 
     def get_dynamic_model(self):
+        """
+        Method to get dynamic model.
+        """
         if self.is_table_exists():
             _model = self._create_dynamic_model()
             self._register_model(_model)
@@ -56,6 +68,9 @@ class DynamicTable(TimeStampedModel, models.Model):
             raise ValidationError(f"Table with name {self.name} does not exist")
 
     def create_dynamic_model(self):
+        """
+        Method to create dynamic model.
+        """
         if not self.is_table_exists():
             _model = self._create_dynamic_model()
             self._create_table(_model)
@@ -63,17 +78,26 @@ class DynamicTable(TimeStampedModel, models.Model):
         else:
             raise ValidationError(f"Table with name {self.name} already exists")
 
-    def update_dynamic_model(self, previous_state):
+    def update_dynamic_model(self, previous_state: dict["str", "str"]):
+        """
+        Method to update dynamic model.
+        This method depends on previous state of columns.
+        :param previous_state: - dict with previous state of columns. Keys are column names, values are field types.
+        """
+        # TODO: This method is too long and hard to read. I think it ok for now, but it should be refactored.
         if self.is_table_exists():
             new_state = dict(self.columns.values_list('name', 'field_type'))
+            # Get columns to add, remove and update
             columns_to_add = set(new_state.keys()) - set(previous_state.keys())
             columns_to_remove = set(previous_state.keys()) - set(new_state.keys())
             columns_to_update = set()
             for column in set(new_state.keys()) & set(previous_state.keys()):
                 if new_state[column] != previous_state[column]:
                     columns_to_update.add(column)
+            # Get model
             _model = self._create_dynamic_model()
             self._register_model(_model)
+
             with connection.schema_editor() as schema_editor:
                 # Delete removed columns
                 for column in columns_to_remove:
@@ -96,6 +120,9 @@ class DynamicTable(TimeStampedModel, models.Model):
             raise ValidationError(f"Table with name {self.name} does not exist")
 
     def delete_dynamic_model(self):
+        """
+        Method to delete dynamic model.
+        """
         if self.is_table_exists():
             _model = apps.get_model(TableBuilderConfig.name, self.name)
             with connection.schema_editor() as schema_editor:
@@ -110,7 +137,7 @@ class DynamicColumn(TimeStampedModel, models.Model):
         INTEGER_FIELD = 'Integer', 'IntegerField'
         BOOLEAN_FIELD = 'Boolean', 'BooleanField'
 
-    name = models.CharField("Column name", max_length=59, validators=[validate_column_name])
+    name = models.CharField("Column name", max_length=59, unique=True, validators=[validate_column_name])
     table = models.ForeignKey(DynamicTable, verbose_name="Table name", on_delete=models.CASCADE, related_name='columns')
     field_type = models.CharField("Field type", max_length=100, choices=FieldTypes.choices, default=FieldTypes.CHAR_FIELD)
 
@@ -121,10 +148,16 @@ class DynamicColumn(TimeStampedModel, models.Model):
         unique_together = ('name', 'table')
 
     def _get_field(self):
+        """
+        Method to get Django model field by field type.
+        """
         return self._get_field_by_type(self.field_type)
 
     @staticmethod
     def _get_field_by_type(field_type):
+        """
+        Method to get Django model field by field type.
+        """
         if field_type == DynamicColumn.FieldTypes.CHAR_FIELD:
             return models.CharField(max_length=255)
         elif field_type == DynamicColumn.FieldTypes.INTEGER_FIELD:

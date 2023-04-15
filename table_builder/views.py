@@ -4,7 +4,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from table_builder.serializers import DynamicTableSerializer, DummySerializer, serializer_factory
-
 from table_builder.models import DynamicTable
 
 
@@ -18,7 +17,10 @@ class DynamicTableViewSet(viewsets.ModelViewSet):
         obj.create_dynamic_model()
 
     def perform_update(self, serializer):
-        previous_state = dict(DynamicTable.objects.get(pk=self.get_object().pk).columns.values_list('name', 'field_type'))
+        previous_state = dict(
+            # TODO: This is not the best way to do this, but hard resetting the model is not an option for now
+            DynamicTable.objects.get(pk=self.get_object().pk).columns.values_list('name', 'field_type')
+        )
         obj = serializer.save()
         obj.update_dynamic_model(previous_state)
 
@@ -26,8 +28,13 @@ class DynamicTableViewSet(viewsets.ModelViewSet):
         instance.delete_dynamic_model()
         instance.delete()
 
-    @action(detail=True, methods=['post'], serializer_class=DummySerializer)
+    @action(detail=True, methods=['post'], serializer_class=DummySerializer, url_name='row')
     def row(self, request, pk=None):
+        """
+        Create a new row in the table
+        Uses DummySerializer as a placeholder for the dynamic serializer
+        Serializer is created dynamically based on the table's columns
+        """
         dynamic_model = self.get_object().get_dynamic_model()
         serializer = serializer_factory(dynamic_model)(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -40,8 +47,13 @@ class DynamicTableViewSet(viewsets.ModelViewSet):
             200: DummySerializer(many=True),
         }
     )
-    @action(detail=True, methods=['get'], serializer_class=DummySerializer)
+    @action(detail=True, methods=['get'], serializer_class=DummySerializer, url_name='rows')
     def rows(self, request, pk=None):
+        """
+        Get all rows in the table
+        Uses DummySerializer as a placeholder for the dynamic serializer
+        Serializer is created dynamically based on the table's columns
+        """
         dynamic_model = self.get_object().get_dynamic_model()
         serializer = serializer_factory(dynamic_model)(dynamic_model.objects.all(), many=True)
         return Response(serializer.data)

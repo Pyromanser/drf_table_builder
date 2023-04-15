@@ -17,7 +17,9 @@ services:
     container_name: app
     build: .
     volumes:
-      - .:/home/appuser/app
+#      - .:/home/appuser/app
+      - ./core:/home/appuser/app/core
+      - ./table_builder:/home/appuser/app/table_builder
     ports:
       - "8000:8000"
     depends_on:

@@ -29,3 +29,4 @@ typing_extensions==4.5.0
 uritemplate==4.1.1
 urllib3==1.26.15
 psycopg [c]==3.1.8
+django-environ==0.10.0

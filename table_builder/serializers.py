@@ -21,6 +21,9 @@ class DynamicTableSerializer(WritableNestedModelSerializer):
 
 
 class DummySerializer(serializers.Serializer):
+    """
+    Dummy serializer for placeholder.
+    """
     id = serializers.IntegerField(read_only=True)
     char_field = serializers.CharField(max_length=255)
     integer_field = serializers.IntegerField()
@@ -28,7 +31,9 @@ class DummySerializer(serializers.Serializer):
 
 
 def serializer_factory(model):
-
+    """
+    Create a serializer class for a given model.
+    """
     attrs = {
         'Meta': type('Meta', (object,), {
             'model': model,

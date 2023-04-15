@@ -9,6 +9,7 @@ def validate_table_name(value):
     """
     # Define the regex pattern for valid table names
     pattern = r'^[a-z][a-z0-9_]*$'
+    # TODO: add more restricted names
     restricted_names = ['django_admin_log', 'django_content_type', 'django_migrations', 'django_session']
 
     # Check if the value matches the regex pattern

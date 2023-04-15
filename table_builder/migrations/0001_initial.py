@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
                 ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('name', models.CharField(max_length=59, validators=[table_builder.validators.validate_column_name], verbose_name='Column name')),
+                ('name', models.CharField(max_length=59, unique=True, validators=[table_builder.validators.validate_column_name], verbose_name='Column name')),
                 ('field_type', models.CharField(choices=[('Char', 'CharField'), ('Integer', 'IntegerField'), ('Boolean', 'BooleanField')], default='Char', max_length=100, verbose_name='Field type')),
                 ('table', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='columns', to='table_builder.dynamictable', verbose_name='Table name')),
             ],
