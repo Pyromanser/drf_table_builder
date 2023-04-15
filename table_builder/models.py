@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.core.exceptions import ValidationError
-from django.db import models, connection, transaction
+from django.db import models, connection
 from django_extensions.db.models import TimeStampedModel
 
 from table_builder.apps import TableBuilderConfig
@@ -47,7 +47,6 @@ class DynamicTable(TimeStampedModel, models.Model):
             result = cursor.fetchone()
             return result[0] is not None
 
-    @transaction.atomic
     def create_dynamic_model(self):
         if not self.is_table_exists():
             _model = self._create_dynamic_model()
@@ -56,7 +55,6 @@ class DynamicTable(TimeStampedModel, models.Model):
         else:
             raise ValidationError(f"Table with name {self.name} already exists")
 
-    @transaction.atomic
     def update_dynamic_model(self, previous_state):
         if self.is_table_exists():
             new_state = dict(self.columns.values_list('name', 'field_type'))
@@ -66,7 +64,8 @@ class DynamicTable(TimeStampedModel, models.Model):
             for column in set(new_state.keys()) & set(previous_state.keys()):
                 if new_state[column] != previous_state[column]:
                     columns_to_update.add(column)
-            _model = apps.get_model(TableBuilderConfig.name, self.name)
+            _model = self._create_dynamic_model()
+            self._register_model(_model)
             with connection.schema_editor() as schema_editor:
                 # Delete removed columns
                 for column in columns_to_remove:
@@ -85,6 +84,14 @@ class DynamicTable(TimeStampedModel, models.Model):
                     field = DynamicColumn._get_field_by_type(new_state[column])
                     field.set_attributes_from_name(column)
                     schema_editor.alter_field(_model, old_field, field, strict=False)
+        else:
+            raise ValidationError(f"Table with name {self.name} does not exist")
+
+    def delete_dynamic_model(self):
+        if self.is_table_exists():
+            _model = apps.get_model(TableBuilderConfig.name, self.name)
+            with connection.schema_editor() as schema_editor:
+                schema_editor.delete_model(_model)
         else:
             raise ValidationError(f"Table with name {self.name} does not exist")
 
