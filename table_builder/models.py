@@ -47,6 +47,14 @@ class DynamicTable(TimeStampedModel, models.Model):
             result = cursor.fetchone()
             return result[0] is not None
 
+    def get_dynamic_model(self):
+        if self.is_table_exists():
+            _model = self._create_dynamic_model()
+            self._register_model(_model)
+            return _model
+        else:
+            raise ValidationError(f"Table with name {self.name} does not exist")
+
     def create_dynamic_model(self):
         if not self.is_table_exists():
             _model = self._create_dynamic_model()

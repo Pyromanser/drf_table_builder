@@ -18,3 +18,22 @@ class DynamicTableSerializer(WritableNestedModelSerializer):
     class Meta:
         model = DynamicTable
         fields = ('pk', 'name', 'columns', 'created', 'modified')
+
+
+class DummySerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    char_field = serializers.CharField(max_length=255)
+    integer_field = serializers.IntegerField()
+    boolean_field = serializers.BooleanField()
+
+
+def serializer_factory(model):
+
+    attrs = {
+        'Meta': type('Meta', (object,), {
+            'model': model,
+            'fields': '__all__',
+
+        }),
+    }
+    return type(f'{model.__name__}Serializer', (serializers.ModelSerializer,), attrs)
