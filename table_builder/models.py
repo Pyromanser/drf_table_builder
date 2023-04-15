@@ -1,10 +1,11 @@
 from django.apps import apps
 from django.core.exceptions import ValidationError
-from django.db import models, connection
+from django.db import connection, models
+
 from django_extensions.db.models import TimeStampedModel
 
 from table_builder.apps import TableBuilderConfig
-from table_builder.validators import validate_table_name, validate_column_name
+from table_builder.validators import validate_column_name, validate_table_name
 
 
 class DynamicTable(TimeStampedModel, models.Model):
@@ -139,7 +140,9 @@ class DynamicColumn(TimeStampedModel, models.Model):
 
     name = models.CharField("Column name", max_length=59, unique=True, validators=[validate_column_name])
     table = models.ForeignKey(DynamicTable, verbose_name="Table name", on_delete=models.CASCADE, related_name='columns')
-    field_type = models.CharField("Field type", max_length=100, choices=FieldTypes.choices, default=FieldTypes.CHAR_FIELD)
+    field_type = models.CharField(
+        "Field type", max_length=100, choices=FieldTypes.choices, default=FieldTypes.CHAR_FIELD
+    )
 
     def __str__(self):
         return f"{self.name} ({self.get_field_type_display()})"

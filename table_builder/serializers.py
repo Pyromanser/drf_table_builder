@@ -1,8 +1,9 @@
-from rest_framework import serializers
 from drf_writable_nested import UniqueFieldsMixin
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
-from table_builder.models import DynamicTable, DynamicColumn
+from rest_framework import serializers
+
+from table_builder.models import DynamicColumn, DynamicTable
 
 
 class DynamicColumnSerializer(UniqueFieldsMixin, serializers.ModelSerializer):
@@ -24,7 +25,7 @@ class DummySerializer(serializers.Serializer):
     """
     Dummy serializer for placeholder.
     """
-    id = serializers.IntegerField(read_only=True)
+    id = serializers.IntegerField(read_only=True)  # noqa: A003
     char_field = serializers.CharField(max_length=255)
     integer_field = serializers.IntegerField()
     boolean_field = serializers.BooleanField()

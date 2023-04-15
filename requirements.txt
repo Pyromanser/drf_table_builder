@@ -30,3 +30,8 @@ uritemplate==4.1.1
 urllib3==1.26.15
 psycopg [c]==3.1.8
 django-environ==0.10.0
+# flake8==6.0.0
+# flake8-builtins==2.1.0
+# flake8-django==1.2
+# flake8-import-order==0.18.2
+# flake8-print==5.0.0

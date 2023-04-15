@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
-import environ
 from pathlib import Path
+
+import environ
+
 
 # Project uses 'django-environ' and .env file!!!
 env = environ.Env(

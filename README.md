@@ -9,8 +9,8 @@ POC of backend for a db table builder app.
     cp .env.example .env
     ```
 2. fill environment variables in `.env` file. This file will be user by `docker compose` or `django-environ`.
-3. run project using `docker-compose`:
-    1. run `docker-compose up` (configuration and scripts will do the rest):
+3. run project using `docker compose`:
+    1. run `docker compose up` (configuration and scripts will do the rest):
         ```bash
         docker compose up
         ```
@@ -49,6 +49,7 @@ Project uses swagger schema for documentation - check it out at `http://localhos
 
 Project uses `TokenAuthentication` for authentication and `IsAuthenticatedOrReadOnly` as default permissions. To get a token, you need to log in using `POST /api/login/` endpoint. For non-safe methods, you need to pass the token in the `Authorization` header (don't forget to add `Token ` before token).
 
+In `fixtures.json` you can find a user with username `admin`, password `admin` and token `0000000000000000000000000000000000000000`.
 
 ### Authentication
 
@@ -146,8 +147,8 @@ POST /api/table/:id/row/
 
 ## Tests
 
-1. run tests using `docker-compose`:
-    1. run `docker-compose up`:
+1. run tests using `docker compose`:
+    1. run `docker compose up`:
         ```bash
         docker compose up
         ```

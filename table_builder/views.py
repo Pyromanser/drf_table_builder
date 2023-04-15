@@ -1,10 +1,11 @@
 from drf_spectacular.utils import extend_schema
-from rest_framework import viewsets, status
+
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from table_builder.serializers import DynamicTableSerializer, DummySerializer, serializer_factory
 from table_builder.models import DynamicTable
+from table_builder.serializers import DummySerializer, DynamicTableSerializer, serializer_factory
 
 
 class DynamicTableViewSet(viewsets.ModelViewSet):
