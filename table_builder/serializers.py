@@ -1,10 +1,11 @@
 from rest_framework import serializers
+from drf_writable_nested import UniqueFieldsMixin
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 from table_builder.models import DynamicTable, DynamicColumn
 
 
-class DynamicColumnSerializer(serializers.ModelSerializer):
+class DynamicColumnSerializer(UniqueFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = DynamicColumn
         fields = ('pk', 'name', 'table', 'field_type', 'created', 'modified')
