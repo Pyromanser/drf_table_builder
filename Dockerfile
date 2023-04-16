@@ -23,7 +23,7 @@ COPY --from=python-build /python /home/appuser/python
 RUN mkdir /home/appuser/app && chown -R appuser:appuser /home/appuser/app && chmod 755 /home/appuser/app
 USER appuser
 COPY . /home/appuser/app
-COPY ./docker-entrypoint.sh ./runserver.sh ./wait-for-command.sh /home/appuser/
+COPY ./scripts/docker-entrypoint.sh ./scripts/runserver.sh ./scripts/wait-for-command.sh /home/appuser/
 
 ENV PYTHONPATH=/home/appuser/python
 ENV PATH="${PYTHONPATH}/bin:${PATH}"
