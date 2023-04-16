@@ -4,9 +4,9 @@ POC of backend for a db table builder app.
 
 ## Setup and run
 
-1. create a `.env` from the `.env.example` file:
+1. create a `.env` from the `example.env` file:
     ```bash
-    cp .env.example .env
+    cp example.env .env
     ```
 2. fill environment variables in `.env` file. This file will be user by `docker compose` or `django-environ`.
 3. run project using `docker compose`:
